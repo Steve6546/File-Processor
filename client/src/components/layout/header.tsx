@@ -1,8 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Code2, LayoutDashboard, ArrowLeft } from "lucide-react";
+import { Code2, LayoutDashboard, ArrowLeft, LogOut, User } from "lucide-react";
 import { SiGithub } from "react-icons/si";
 import { Link, useLocation } from "wouter";
+import { useAuth } from "@/hooks/use-auth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface HeaderProps {
   showBackButton?: boolean;
@@ -11,6 +19,7 @@ interface HeaderProps {
 
 export function Header({ showBackButton, projectName }: HeaderProps) {
   const [location] = useLocation();
+  const { user, logout, isLoggingOut } = useAuth();
 
   return (
     <header className="h-14 border-b flex items-center justify-between gap-4 px-4 bg-background sticky top-0 z-50">
@@ -65,6 +74,31 @@ export function Header({ showBackButton, projectName }: HeaderProps) {
           </>
         )}
         <ThemeToggle />
+        {user && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" data-testid="button-user-menu">
+                <User className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">{user.username}</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem disabled>
+                <User className="h-4 w-4 mr-2" />
+                {user.username}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={logout}
+                disabled={isLoggingOut}
+                data-testid="button-logout"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                {isLoggingOut ? "Logging out..." : "Logout"}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
     </header>
   );
